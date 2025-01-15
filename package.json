@@ -12,5 +12,16 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.7"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ABCambridge/jwt-pizza-service.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/ABCambridge/jwt-pizza-service/issues"
+  },
+  "homepage": "https://github.com/ABCambridge/jwt-pizza-service#readme"
 }
