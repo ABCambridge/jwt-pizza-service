@@ -12,16 +12,20 @@ beforeAll(async () => {
 });
 
 test( "valid register", async () => {
-  const fakeUser = { name: "fake user", email: "fake@test.com", password: "b" };
-  const registerResponse = (await request( app ).post( "/api/auth" ).send( fakeUser )).body;
+  const fakeUser = { name: "fake user", email: `${randomName()}@test.com`, password: "b" };
+  const registerResponse = (await request( app ).post( "/api/auth" ).send( fakeUser ));
 
-  expectValidJwt( registerResponse.token );
-  delete registerResponse.token;
+  expect( registerResponse.status ).toBe( 200 );
 
-  expect( registerResponse.user.id ).toBeGreaterThanOrEqual( 1 );
-  delete registerResponse.user.id;
+  responseBody = registerResponse.body;
 
-  expect( registerResponse ).toMatchObject( { user: { name: fakeUser.name, email: fakeUser.email, roles: [{ role: "diner" }] } } );
+  expectValidJwt( responseBody.token );
+  delete responseBody.token;
+
+  expect( responseBody.user.id ).toBeGreaterThanOrEqual( 1 );
+  delete responseBody.user.id;
+
+  expect( responseBody ).toMatchObject( { user: { name: fakeUser.name, email: fakeUser.email, roles: [{ role: "diner" }] } } );
   
 });
 
@@ -41,22 +45,31 @@ test( "valid login", async () => {
   await logoutUser( loginRes.body.token );
 });
 
-// test( "invalid login", async () => {
-
-// });
+test( "invalid login", async () => {
+  const badUser = { name: testUser.name, email: `${testUser.email}`, password: `test${testUser.password}` };
+  const loginResult = await loginUser( badUser );
+  expect( loginResult.status ).toBe( 404 );
+  expect( loginResult.body.message ).toBe( "unknown user" );
+});
 
 test( "valid logout", async () => {
-  const loginResult = await loginUser( "/api/auth" );
+  const loginResult = await loginUser( testUser );
   let authToken = loginResult.body.token;
 
-  const logoutResult = await request( app ).delete( '/api/auth' ).set("Authorization", `Bearer ${authToken}`).send();
+  const logoutResult = await logoutUser( authToken );
   expect( logoutResult.status ).toBe( 200 );
   expect( logoutResult.body ).toMatchObject( { message: 'logout successful' } );
 });
 
-// test( "invalid logout", async () => {
+test( "invalid auth", async () => {
+  const loginResult = await loginUser( testUser );
+  let authToken = loginResult.body.token;
 
-// });
+  authToken = `test${authToken}`
+  const logoutResult = await logoutUser( authToken );
+  expect( logoutResult.status ).toBe( 401 );
+  expect( logoutResult.body.message ).toBe( "unauthorized");
+});
 
 // test( "valid user update", async () => {
 
@@ -80,7 +93,7 @@ function randomName() {
  * @returns The response from the service.
  */
 async function loginUser( user ) {
-  return await request( app ).put( '/api/auth' ).send( testUser );
+  return await request( app ).put( '/api/auth' ).send( user );
 }
 
 /**

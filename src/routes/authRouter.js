@@ -131,10 +131,6 @@ async function clearAuth(req) {
 
 function readAuthToken(req) {
   const authHeader = req.headers.authorization;
-
-  const fs = require('fs')
-  fs.writeFileSync('andrew.txt', `${JSON.stringify(req.headers)}`)
-
   if (authHeader) {
     return authHeader.split(' ')[1];
   }
