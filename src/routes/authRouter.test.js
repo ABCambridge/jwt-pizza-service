@@ -91,7 +91,6 @@ test( "valid user update", async () => {
   expect( updateResult.status ).toBe( 200 );
 
   const expectedUser = currentUser;
-  console.log(testUser.id, currentUser.id, expectedUser.id)
   expectedUser.email = newData.email;
   expect( updateResult.body ).toMatchObject( expectedUser );
 });
