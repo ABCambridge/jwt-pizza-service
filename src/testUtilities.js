@@ -83,6 +83,14 @@ async function removeFranchise( franchiseId ) {
   return deleteResponse.body;
 }
 
+async function createStore( authToken, franchiseId, newStore ) {
+  return await request( app ).post( `/api/franchise/${franchiseId}/store` ).set( "Authorization", `Bearer ${authToken}` ).send( newStore );
+}
+
+async function deleteStore( authToken, franchiseId, storeId ) {
+  return await request( app ).delete( `/api/franchise/${franchiseId}/store/${storeId}` ).set( "Authorization", `Bearer ${authToken}` ).send();
+}
+
 module.exports = {
   app,
   request,
@@ -98,5 +106,7 @@ module.exports = {
   insertRandomFranchise,
   removeFranchise,
   deleteFranchise,
-  getAllFranchises
+  getAllFranchises,
+  createStore,
+  deleteStore
 }
