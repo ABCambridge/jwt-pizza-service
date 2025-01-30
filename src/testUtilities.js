@@ -1,15 +1,9 @@
 const request = require('supertest');
 const app = require('./service');
 
-module.exports = {
-  app,
-  request,
-  expectValidJwt,
-  randomName,
-  loginUser,
-  getTokenFromResponse,
-  logoutUser,
-  updateUser
+const adminUser = {
+  email: "a@jwt.com",
+  password: "admin"
 }
 
 function expectValidJwt(potentialJwt) {
@@ -49,4 +43,46 @@ async function logoutUser( authToken ) {
 
 async function updateUser( authToken, userId, userUpdates ) {
   return await request( app ).put( `/api/auth/${userId}` ).set( "Authorization", `Bearer ${authToken}`).send( userUpdates );
+}
+
+function createRandomFranchiseObject() {
+  const franchise = {
+      name: randomName(),
+      admins: [{
+          email: adminUser.email
+      },]
+  }
+  return franchise;
+}
+
+async function insertFranchise( franchise ) {
+  const loginResponse = await loginUser( adminUser );
+  const token = getTokenFromResponse( loginResponse );
+  return await request( app ).post( "/api/franchise" ).set( "Authorization", `Bearer ${token}`).send( franchise );
+}
+
+async function insertRandomFranchise() {
+  const franchise = createRandomFranchiseObject();
+  await insertFranchise( franchise );
+  return franchise;
+}
+
+async function removeFranchise( franchise ) {
+  throw "Not Implemented!!";
+}
+
+module.exports = {
+  app,
+  request,
+  adminUser,
+  expectValidJwt,
+  randomName,
+  loginUser,
+  getTokenFromResponse,
+  logoutUser,
+  updateUser,
+  createRandomFranchiseObject,
+  insertFranchise,
+  insertRandomFranchise,
+  removeFranchise
 }
