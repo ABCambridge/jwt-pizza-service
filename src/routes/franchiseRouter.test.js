@@ -45,6 +45,21 @@ test( "delete valid franchise", async () => {
     await utils.logoutUser( token );
 });
 
+test( "create valid franchise store", async () => {
+    const randomFranchise = await utils.insertRandomFranchise();
+    const token = utils.getTokenFromResponse( await utils.loginUser( utils.adminUser ) );
+
+    const data = {
+        franchiseId: randomFranchise.id,
+        name: "TestStore"
+    }
+    const storeResponse = await request( app ).post( `/api/franchise/${randomFranchise.id}/store` ).set( "Authorization", `Bearer ${token}` ).send( data );
+    expect( storeResponse.status ).toBe( 200 );
+    
+
+    await utils.logoutUser( token );
+});
+
 function checkForFranchiseInList( franchise, franchiseList ) {
     let found = false;
     for( const f of franchiseList ) {
