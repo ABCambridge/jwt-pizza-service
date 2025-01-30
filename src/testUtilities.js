@@ -63,8 +63,8 @@ async function insertFranchise( franchise ) {
 
 async function insertRandomFranchise() {
   const franchise = createRandomFranchiseObject();
-  await insertFranchise( franchise );
-  return franchise;
+  const response = await insertFranchise( franchise );
+  return response.body;
 }
 
 async function removeFranchise( franchise ) {
