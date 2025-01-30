@@ -4,10 +4,16 @@ const app = require('../service');
 const testUser = { name: 'pizza diner', email: 'reg@test.com', password: 'a' };
 let testUserAuthToken;
 
+
+if (process.env.VSCODE_INSPECTOR_OPTIONS) {
+  jest.setTimeout(60 * 1000 * 5); // 5 minutes
+}
+
 beforeAll(async () => {
   testUser.email = randomName() + '@test.com';
   const registerRes = await request(app).post('/api/auth').send(testUser);
-  testUserAuthToken = registerRes.body.token;
+  testUserAuthToken = getTokenFromResponse( registerRes );
+  testUser.id = registerRes.body.user.id;
   expectValidJwt(testUserAuthToken);
 });
 
@@ -26,7 +32,6 @@ test( "valid register", async () => {
   delete responseBody.user.id;
 
   expect( responseBody ).toMatchObject( { user: { name: fakeUser.name, email: fakeUser.email, roles: [{ role: "diner" }] } } );
-  
 });
 
 // test( "invalid register", async () => {
@@ -63,17 +68,33 @@ test( "valid logout", async () => {
 
 test( "invalid auth", async () => {
   const loginResult = await loginUser( testUser );
-  let authToken = loginResult.body.token;
+  const authToken = getTokenFromResponse( loginResult );
 
-  authToken = `test${authToken}`
-  const logoutResult = await logoutUser( authToken );
+  let badAuthToken = `test${authToken}`
+  const logoutResult = await logoutUser( badAuthToken );
   expect( logoutResult.status ).toBe( 401 );
   expect( logoutResult.body.message ).toBe( "unauthorized");
+
+  await logoutUser( authToken )
 });
 
-// test( "valid user update", async () => {
+test( "valid user update", async () => {
+  const loginResult = await loginUser( testUser );
+  let authToken = getTokenFromResponse( loginResult );
+  const currentUser = loginResult.body.user;
 
-// });
+  const newData = {
+    "email": `${randomName()}@gmail.com`,
+    "password": "your mom"
+  }
+  const updateResult = await updateUser( authToken, currentUser.id, newData );
+  expect( updateResult.status ).toBe( 200 );
+
+  const expectedUser = currentUser;
+  console.log(testUser.id, currentUser.id, expectedUser.id)
+  expectedUser.email = newData.email;
+  expect( updateResult.body ).toMatchObject( expectedUser );
+});
 
 // test( "invalid user update", async () => {
 
@@ -97,10 +118,23 @@ async function loginUser( user ) {
 }
 
 /**
+ * Extracts the auth token from the service response
+ * @param {*} response 
+ * @returns 
+ */
+function getTokenFromResponse( response ) {
+  return response.body.token;
+}
+
+/**
  * Logs out the user with the provided auth token.
  * @param {*} authToken 
  * @returns The response from the service.
  */
 async function logoutUser( authToken ) {
   return await request( app ).delete( "/api/auth" ).set( "Authorization", `Bearer ${authToken}` ).send();
+}
+
+async function updateUser( authToken, userId, userUpdates ) {
+  return await request( app ).put( `/api/auth/${userId}` ).set( "Authorization", `Bearer ${authToken}`).send( userUpdates );
 }
