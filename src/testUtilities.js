@@ -45,6 +45,10 @@ async function updateUser( authToken, userId, userUpdates ) {
   return await request( app ).put( `/api/auth/${userId}` ).set( "Authorization", `Bearer ${authToken}`).send( userUpdates );
 }
 
+async function getAllFranchises() {
+  return await request( app ).get( "/api/franchise" ).send();
+}
+
 function createRandomFranchiseObject() {
   const franchise = {
       name: randomName(),
@@ -68,9 +72,13 @@ async function insertRandomFranchise() {
   return response.body;
 }
 
+async function deleteFranchise( authToken, franchiseId ) {
+  return await request( app ).delete( `/api/franchise/${franchiseId}` ).set( "Authorization", `Bearer ${authToken}`);
+}
+
 async function removeFranchise( franchiseId ) {
   const token = getTokenFromResponse( await loginUser( adminUser ) );
-  const deleteResponse = await request( app ).delete( `/api/franchise/${franchiseId}` ).set( "Authorization", `Bearer ${token}`);
+  const deleteResponse = deleteFranchise( token, franchiseId );
   await logoutUser( token );
   return deleteResponse.body;
 }
@@ -88,5 +96,7 @@ module.exports = {
   createRandomFranchiseObject,
   insertFranchise,
   insertRandomFranchise,
-  removeFranchise
+  removeFranchise,
+  deleteFranchise,
+  getAllFranchises
 }
