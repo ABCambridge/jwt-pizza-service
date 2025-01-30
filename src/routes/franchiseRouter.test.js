@@ -16,12 +16,14 @@ test( "valid list franchises", async () => {
     let found = false;
     for( const f of franchiseList ) {
         if ( f.id === randomFranchise.id ) {
+            found = true;
             expect( f ).toMatchObject( randomFranchise );
             break;
         }   
     }
-    // The below line should work, but is failing because the DB function doesn't attach the users, but the API specifies their presence.
-    // remove the franchise
+    expect( found ).toBeTruthy();
+    
+    await utils.removeFranchise( randomFranchise.id )
 });
 
 test( "insert valid franchise", async () => {
@@ -33,4 +35,6 @@ test( "insert valid franchise", async () => {
     expect( createdFranchise ).toHaveProperty( 'id' );
     testFranchise.id = createdFranchise.id; // copy over the id so the objects should be equal
     expect( createdFranchise ).toMatchObject( testFranchise );
+
+    await utils.removeFranchise( createdFranchise.id );
 });

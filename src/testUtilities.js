@@ -56,9 +56,10 @@ function createRandomFranchiseObject() {
 }
 
 async function insertFranchise( franchise ) {
-  const loginResponse = await loginUser( adminUser );
-  const token = getTokenFromResponse( loginResponse );
-  return await request( app ).post( "/api/franchise" ).set( "Authorization", `Bearer ${token}`).send( franchise );
+  const token = getTokenFromResponse( await loginUser( adminUser ) );
+  const result = await request( app ).post( "/api/franchise" ).set( "Authorization", `Bearer ${token}`).send( franchise );
+  await logoutUser( token );
+  return result;
 }
 
 async function insertRandomFranchise() {
@@ -67,8 +68,11 @@ async function insertRandomFranchise() {
   return response.body;
 }
 
-async function removeFranchise( franchise ) {
-  throw "Not Implemented!!";
+async function removeFranchise( franchiseId ) {
+  const token = getTokenFromResponse( await loginUser( adminUser ) );
+  const deleteResponse = await request( app ).delete( `/api/franchise/${franchiseId}` ).set( "Authorization", `Bearer ${token}`);
+  await logoutUser( token );
+  return deleteResponse.body;
 }
 
 module.exports = {
