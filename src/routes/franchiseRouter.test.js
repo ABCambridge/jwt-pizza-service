@@ -1,5 +1,6 @@
-const request = require('supertest');
-const app = require('../service');
+const utils = require( '../testUtilities' )
+const app = utils.app;
+const request = utils.request;
 
 const adminUser = {
     email: "a@jwt.com",
