@@ -91,6 +91,26 @@ async function deleteStore( authToken, franchiseId, storeId ) {
   return await request( app ).delete( `/api/franchise/${franchiseId}/store/${storeId}` ).set( "Authorization", `Bearer ${authToken}` ).send();
 }
 
+async function getMenu() {
+  return await request( app ).get( "/api/order/menu" ).send();
+}
+
+function makeRandomMenuItem() {
+  return {
+    "title": randomName(),
+    "description": "this is a test menu item",
+    "image": "no-image",
+    "price": .001,
+  }
+}
+
+async function addMenuItem( item ) {
+  const token = getTokenFromResponse( await loginUser ( adminUser ) );
+  const addItemResponse = await request( app ).put( "/api/order/menu" ).set( "Authorization", `Bearer ${token}`).send( item );
+  await logoutUser( token );
+  return addItemResponse;
+}
+
 module.exports = {
   app,
   request,
@@ -108,5 +128,8 @@ module.exports = {
   deleteFranchise,
   getAllFranchises,
   createStore,
-  deleteStore
+  deleteStore,
+  getMenu,
+  addMenuItem,
+  makeRandomMenuItem
 }

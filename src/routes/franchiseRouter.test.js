@@ -1,6 +1,4 @@
 const utils = require( '../testUtilities' )
-const app = utils.app;
-const request = utils.request;
 
 test( "valid list franchises", async () => {
     const randomFranchise = await utils.insertRandomFranchise();
