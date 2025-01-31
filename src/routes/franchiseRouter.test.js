@@ -1,7 +1,13 @@
 const utils = require( '../testUtilities' )
 
+let admin;
+
+beforeAll(async () => {
+    admin = await utils.makeAdminUser();  
+});
+
 test( "valid list franchises", async () => {
-    const randomFranchise = await utils.insertRandomFranchise();
+    const randomFranchise = await utils.insertRandomFranchise( admin );
     randomFranchise.stores = [];
     delete randomFranchise.admins;
 
@@ -14,12 +20,12 @@ test( "valid list franchises", async () => {
    
     expect( checkForFranchiseInList( randomFranchise, franchiseList ) ).toBeTruthy();
     
-    await utils.removeFranchise( randomFranchise.id )
+    await utils.removeFranchise( randomFranchise.id, admin )
 });
 
 test( "insert valid franchise", async () => {
-    const testFranchise = utils.createRandomFranchiseObject();
-    const newFranchiseResponse = await utils.insertFranchise( testFranchise );
+    const testFranchise = utils.createRandomFranchiseObject( admin );
+    const newFranchiseResponse = await utils.insertFranchise( testFranchise, admin );
     expect( newFranchiseResponse.status ).toBe( 200 );
 
     const createdFranchise = newFranchiseResponse.body;
@@ -31,12 +37,12 @@ test( "insert valid franchise", async () => {
     delete createdFranchise.admins;
     expect( checkForFranchiseInList( createdFranchise, ( await utils.getAllFranchises() ).body ) ).toBeTruthy();
 
-    await utils.removeFranchise( createdFranchise.id );
+    await utils.removeFranchise( createdFranchise.id, admin );
 });
 
 test( "delete valid franchise", async () => {
-    const randomFranchise = await utils.insertRandomFranchise();
-    const token = utils.getTokenFromResponse( await utils.loginUser( utils.adminUser ) );
+    const randomFranchise = await utils.insertRandomFranchise( admin );
+    const token = utils.getTokenFromResponse( await utils.loginUser( admin ) );
     const deleteResponse = await utils.deleteFranchise( token, randomFranchise.id );
 
     expect( deleteResponse.status ).toBe( 200 );
@@ -47,8 +53,8 @@ test( "delete valid franchise", async () => {
 });
 
 test( "create valid franchise store", async () => {
-    const randomFranchise = await utils.insertRandomFranchise();
-    const token = utils.getTokenFromResponse( await utils.loginUser( utils.adminUser ) );
+    const randomFranchise = await utils.insertRandomFranchise( admin );
+    const token = utils.getTokenFromResponse( await utils.loginUser( admin ) );
 
     const newStore = {
         franchiseId: randomFranchise.id,
@@ -62,12 +68,12 @@ test( "create valid franchise store", async () => {
 
     await utils.deleteStore( token, randomFranchise.id, store.id );
     await utils.logoutUser( token );
-    await utils.removeFranchise( randomFranchise.id );
+    await utils.removeFranchise( randomFranchise.id, admin );
 });
 
 test( "delete valid franchise store", async () => {
-    const randomFranchise = await utils.insertRandomFranchise();
-    const token = utils.getTokenFromResponse( await utils.loginUser( utils.adminUser ) );
+    const randomFranchise = await utils.insertRandomFranchise( admin );
+    const token = utils.getTokenFromResponse( await utils.loginUser( admin ) );
 
     const newStore = {
         franchiseId: randomFranchise.id,
@@ -81,7 +87,7 @@ test( "delete valid franchise store", async () => {
     expect( deleteResponse.body.message ).toBe( "store deleted" );
 
     await utils.logoutUser( token );
-    await utils.removeFranchise( randomFranchise.id );
+    await utils.removeFranchise( randomFranchise.id, admin );
 });
 
 

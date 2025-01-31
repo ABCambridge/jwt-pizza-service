@@ -1,8 +1,14 @@
 const utils = require( '../testUtilities' );
 
+let admin;
+
+beforeAll(async () => {
+    admin = await utils.makeAdminUser();  
+})
+
 test( "valid add menu item", async () => {
     const menuItem = utils.makeRandomMenuItem();
-    const addMenuResponse = await utils.addMenuItem( menuItem );
+    const addMenuResponse = await utils.addMenuItem( menuItem, admin );
     
     expect( addMenuResponse.status ).toBe( 200 );
     const menu = addMenuResponse.body;
@@ -20,9 +26,8 @@ test( "valid add menu item", async () => {
 });
 
 test( "valid list menu", async () => {
-    const addMenuResponse = await utils.addMenuItem( utils.makeRandomMenuItem() );
+    const addMenuResponse = await utils.addMenuItem( utils.makeRandomMenuItem(), admin );
     const menuItem = addMenuResponse.body[0];
-    console.log(JSON.stringify(addMenuResponse.body));
 
     const menuResponse = await utils.getMenu();
     expect( menuResponse.status ).toBe( 200 );

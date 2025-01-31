@@ -2,7 +2,7 @@ const request = require('supertest');
 const app = require('./service');
 const { Role, DB } = require( "./database/database.js" );
 
-function makeAdminUser() {
+async function makeAdminUser() {
   const admin = {
     name: randomName(),
     email: `${randomName()}@jwt.com`,
@@ -12,7 +12,7 @@ function makeAdminUser() {
     }]
   };
 
-  DB.addUser( admin );
+  await DB.addUser( admin );
   return admin;
 }
 
@@ -78,7 +78,7 @@ async function insertFranchise( franchise, user ) {
 }
 
 async function insertRandomFranchise( user ) {
-  const franchise = createRandomFranchiseObject();
+  const franchise = createRandomFranchiseObject( user );
   const response = await insertFranchise( franchise, user );
   return response.body;
 }
