@@ -94,6 +94,7 @@ test( "valid user update", async () => {
   const expectedUser = currentUser;
   expectedUser.email = newData.email;
   expect( updateResult.body ).toMatchObject( expectedUser );
+  utils.logoutUser( authToken );
 });
 
 // test( "invalid user update", async () => {
