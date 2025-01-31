@@ -1,9 +1,19 @@
 const request = require('supertest');
 const app = require('./service');
+const { Role, DB } = require( "./database/database.js" );
 
-const adminUser = {
-  email: "a@jwt.com",
-  password: "admin"
+function makeAdminUser() {
+  const admin = {
+    name: randomName(),
+    email: `${randomName()}@jwt.com`,
+    password: "admin",
+    roles: [{
+      role: Role.Admin
+    }]
+  };
+
+  DB.addUser( admin );
+  return admin;
 }
 
 function expectValidJwt(potentialJwt) {
@@ -49,26 +59,27 @@ async function getAllFranchises() {
   return await request( app ).get( "/api/franchise" ).send();
 }
 
-function createRandomFranchiseObject() {
+function createRandomFranchiseObject( user ) {
   const franchise = {
       name: randomName(),
       admins: [{
-          email: adminUser.email
+          email: user.email
       },]
   }
   return franchise;
 }
 
-async function insertFranchise( franchise ) {
-  const token = getTokenFromResponse( await loginUser( adminUser ) );
+// todo: changes start here
+async function insertFranchise( franchise, user ) {
+  const token = getTokenFromResponse( await loginUser( user ) );
   const result = await request( app ).post( "/api/franchise" ).set( "Authorization", `Bearer ${token}`).send( franchise );
   await logoutUser( token );
   return result;
 }
 
-async function insertRandomFranchise() {
+async function insertRandomFranchise( user ) {
   const franchise = createRandomFranchiseObject();
-  const response = await insertFranchise( franchise );
+  const response = await insertFranchise( franchise, user );
   return response.body;
 }
 
@@ -76,8 +87,8 @@ async function deleteFranchise( authToken, franchiseId ) {
   return await request( app ).delete( `/api/franchise/${franchiseId}` ).set( "Authorization", `Bearer ${authToken}`);
 }
 
-async function removeFranchise( franchiseId ) {
-  const token = getTokenFromResponse( await loginUser( adminUser ) );
+async function removeFranchise( franchiseId ,user ) {
+  const token = getTokenFromResponse( await loginUser( user ) );
   const deleteResponse = deleteFranchise( token, franchiseId );
   await logoutUser( token );
   return deleteResponse.body;
@@ -104,8 +115,8 @@ function makeRandomMenuItem() {
   }
 }
 
-async function addMenuItem( item ) {
-  const token = getTokenFromResponse( await loginUser ( adminUser ) );
+async function addMenuItem( item, user ) {
+  const token = getTokenFromResponse( await loginUser ( user ) );
   const addItemResponse = await request( app ).put( "/api/order/menu" ).set( "Authorization", `Bearer ${token}`).send( item );
   await logoutUser( token );
   return addItemResponse;
@@ -114,7 +125,7 @@ async function addMenuItem( item ) {
 module.exports = {
   app,
   request,
-  adminUser,
+  makeAdminUser,
   expectValidJwt,
   randomName,
   loginUser,

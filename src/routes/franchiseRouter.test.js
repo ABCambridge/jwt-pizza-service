@@ -11,8 +11,7 @@ test( "valid list franchises", async () => {
     const franchiseList = franchiseResponse.body;
     expect( franchiseList.length ).toBeGreaterThanOrEqual( 0 );
     // TODO: the franchise objects in the list do not match the shape contract indicated by the API docs
-    console.log( JSON.stringify( randomFranchise ) );
-    console.log( JSON.stringify( franchiseList ) );
+   
     expect( checkForFranchiseInList( randomFranchise, franchiseList ) ).toBeTruthy();
     
     await utils.removeFranchise( randomFranchise.id )
