@@ -24,7 +24,7 @@ test( "valid register", async () => {
 
   expect( registerResponse.status ).toBe( 200 );
 
-  responseBody = registerResponse.body;
+  let responseBody = registerResponse.body;
 
   utils.expectValidJwt( responseBody.token );
   delete responseBody.token;
