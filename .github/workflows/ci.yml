@@ -64,7 +64,7 @@ jobs:
               run: |
                 version=$(date +'%Y%m%d.%H%M%S')
                 echo "version=$version" >> "$GITHUB_OUTPUT"
-                printf '{"version": "%s"}' "$version" > src/version.json
+                printf '{"version": "%s" }' "$version" > src/version.json
 
             - name: Update coverage
               run: |
