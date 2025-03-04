@@ -1,6 +1,6 @@
 # you can find Windows builds of jq here. This script works in the bash terminal
 
-host=http://localhost:3000
+host=https://pizza-service.cambridgeuniverse.org
 
 echo "logging in..."
 response=$(curl -s -X PUT $host/api/auth -d '{"email":"a@jwt.com", "password":"admin"}' -H 'Content-Type: application/json')
