@@ -5,10 +5,14 @@ const franchiseRouter = require('./routes/franchiseRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
 const { requestTracker } = require('./metrics.js');
+const Logger = require("pizza-logger");
+
+const logger = new Logger( config );
 
 const app = express();
 app.use(express.json());
 app.use( requestTracker );
+app.use( logger.httpLogger.bind( logger ) );
 app.use(setAuthUser);
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -47,6 +51,7 @@ app.use('*', (req, res) => {
 
 // Default error handler for all exceptions and errors.
 app.use((err, req, res, next) => {
+  logger.unhandledErrorLogger( err );
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
   next();
 });
