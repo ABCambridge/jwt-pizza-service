@@ -5,7 +5,7 @@ function login_buy_wait_logout_wait {
         curl -s -X POST $host/api/order -H 'Content-Type: application/json' -d '{"franchiseId": 1, "storeId":1, "items":[{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 },{ "menuId": 1, "description": "Veggie", "price": 0.05 }]}'  -H "Authorization: Bearer $token"
         sleep 5
         curl -X DELETE $host/api/auth -H "Authorization: Bearer $token"
-        sleep 1000
+        sleep 10
     done
 }
 
