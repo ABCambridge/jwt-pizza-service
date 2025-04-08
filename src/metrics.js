@@ -24,7 +24,7 @@ function setChaos( status ) {
 function getChaos() { return enableChaos; }
 
 function logChaos() {
-  if ( enableChaos ) {
+  if ( getChaos() ) {
     sendMetric(makeMetric("Chaos Monkey", 1, 'sum', '1'));
   } else {
     sendMetric(makeMetric("Chaos Monkey", 0, 'sum', '1'));
