@@ -4,7 +4,7 @@ const orderRouter = require('./routes/orderRouter.js');
 const franchiseRouter = require('./routes/franchiseRouter.js');
 const version = require('./version.json');
 const config = require('./config.js');
-const { requestTracker } = require('./metrics.js');
+const { requestTracker, logChaos } = require('./metrics.js');
 const Logger = require("pizza-logger");
 
 const logger = new Logger( config );
@@ -53,6 +53,7 @@ app.use('*', (req, res) => {
 app.use((err, req, res, next) => {
   logger.unhandledErrorLogger( err );
   res.status(err.statusCode ?? 500).json({ message: err.message, stack: err.stack });
+  logChaos();
   next();
 });
 

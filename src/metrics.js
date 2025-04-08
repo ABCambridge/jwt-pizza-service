@@ -15,6 +15,10 @@ function requestTracker( request, response, next ) {
     next();
 }
 
+function logChaos() {
+  sendMetric(makeMetric("Chaos Monkey", 1, 'sum', '1'));
+}
+
 function recordLatency( request, response ) {
   const startTime = Date.now();
   response.on( 'finish', () => {
@@ -217,4 +221,4 @@ setInterval( () => {
     sendMetric( makeMetric( 'Memory Usage', memory, 'gauge', '%' ) );
 }, 5000 );
 
-module.exports = { requestTracker }
+module.exports = { requestTracker, logChaos }
