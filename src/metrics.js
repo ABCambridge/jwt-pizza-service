@@ -16,6 +16,13 @@ function requestTracker( request, response, next ) {
 }
 
 let enableChaos = false;
+
+function setChaos( status ) {
+  enableChaos = status;
+}
+
+function getChaos() { return enableChaos; }
+
 function logChaos() {
   if ( enableChaos ) {
     sendMetric(makeMetric("Chaos Monkey", 1, 'sum', '1'));
@@ -226,4 +233,4 @@ setInterval( () => {
     sendMetric( makeMetric( 'Memory Usage', memory, 'gauge', '%' ) );
 }, 5000 );
 
-module.exports = { requestTracker, logChaos, enableChaos }
+module.exports = { requestTracker, logChaos, setChaos, getChaos }
