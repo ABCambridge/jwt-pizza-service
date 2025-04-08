@@ -4,7 +4,7 @@ const { Role, DB } = require('../database/database.js');
 const { authRouter } = require('./authRouter.js');
 const { asyncHandler, StatusCodeError } = require('../endpointHelper.js');
 const Logger = require('pizza-logger');
-
+let {enableChaos} = require('../metrics.js');
 const logger = new Logger( config );
 
 const orderRouter = express.Router();
@@ -43,7 +43,6 @@ orderRouter.endpoints = [
   },
 ];
 
-let enableChaos = false;
 orderRouter.put(
   '/chaos/:state',
   authRouter.authenticateToken,
